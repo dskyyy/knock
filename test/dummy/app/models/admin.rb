@@ -2,7 +2,7 @@ class Admin < ActiveRecord::Base
   has_secure_password
 
   def self.from_token_request request
-    email = request.params["auth"] && request.params["auth"]["email"]
+    email = request.params["email"]
     self.find_by email: email
   end
 

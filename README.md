@@ -161,7 +161,7 @@ class User < ActiveRecord::Base
   def self.from_token_request request
     # Returns a valid user, `nil` or raise `Knock.not_found_exception_class_name`
     # e.g.
-    #   email = request.params["auth"] && request.params["auth"]["email"]
+    #   email = request.params["email"]
     #   self.find_by email: email
   end
 end
@@ -213,7 +213,7 @@ documented with comments in the initializer itself.
 Example request to get a token from your API:
 ```
 POST /user_token
-{"auth": {"email": "foo@bar.com", "password": "secret"}}
+{"email": "foo@bar.com", "password": "secret"}
 ```
 
 Example response from the API:
