@@ -8,7 +8,12 @@ module Knock
       render json: auth_token, status: :created
     end
 
-  private
+    def refresh_token
+      token = Knock::AuthToken.new(payload: { sub: current_user.id }).token
+      render json: { jwt: token }
+    end
+
+    private
     def authenticate
       unless entity.present? && entity.authenticate(auth_params[:password])
         raise Knock.not_found_exception_class
@@ -25,11 +30,11 @@ module Knock
 
     def entity
       @entity ||=
-        if entity_class.respond_to? :from_token_request
-          entity_class.from_token_request request
-        else
-          entity_class.find_by email: auth_params[:email]
-        end
+          if entity_class.respond_to? :from_token_request
+            entity_class.from_token_request request
+          else
+            entity_class.find_by email: auth_params[:email]
+          end
     end
 
     def entity_class
