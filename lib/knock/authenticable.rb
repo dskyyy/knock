@@ -14,12 +14,12 @@ module Knock::Authenticable
   def method_missing(method, *args)
     prefix, entity_name = method.to_s.split('_', 2)
     case prefix
-    when 'authenticate'
-      unauthorized_entity(entity_name) unless authenticate_entity(entity_name)
-    when 'current'
-      authenticate_entity(entity_name)
-    else
-      super
+      when 'authenticate'
+        unauthorized_entity(entity_name) unless authenticate_entity(entity_name)
+      when 'current'
+        authenticate_entity(entity_name)
+      else
+        super
     end
   end
 
@@ -31,7 +31,7 @@ module Knock::Authenticable
   end
 
   def unauthorized_entity(entity_name)
-    head(:unauthorized)
+    render json: { error: "Unauthorized entity: #{entity_name}" }, status: :unauthorized
   end
 
   def token_from_request_headers
@@ -46,11 +46,11 @@ module Knock::Authenticable
       self.class.send(:define_method, getter_name) do
         unless instance_variable_defined?(memoization_var_name)
           current =
-            begin
-              Knock::AuthToken.new(token: token).entity_for(entity_class)
-            rescue Knock.not_found_exception_class, JWT::DecodeError
-              nil
-            end
+              begin
+                Knock::AuthToken.new(token: token).entity_for(entity_class)
+              rescue Knock.not_found_exception_class, JWT::DecodeError
+                nil
+              end
           instance_variable_set(memoization_var_name, current)
         end
         instance_variable_get(memoization_var_name)

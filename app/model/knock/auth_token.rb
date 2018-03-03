@@ -8,12 +8,12 @@ module Knock
     def initialize payload: {}, token: nil, verify_options: {}
       if token.present?
         @payload, _ = JWT.decode token.to_s, decode_key, true, options.merge(verify_options)
-        @token = token
+        @token      = token
       else
         @payload = claims.merge(payload)
-        @token = JWT.encode @payload,
-          secret_key,
-          Knock.token_signature_algorithm
+        @token   = JWT.encode @payload,
+                              secret_key,
+                              Knock.token_signature_algorithm
       end
     end
 
@@ -26,10 +26,10 @@ module Knock
     end
 
     def to_json options = {}
-      {jwt: @token}.to_json
+      { jwt: @token }.to_json
     end
 
-  private
+    private
     def secret_key
       Knock.token_secret_signature_key.call
     end
@@ -40,12 +40,12 @@ module Knock
 
     def options
       verify_claims.merge({
-        algorithm: Knock.token_signature_algorithm
-      })
+                              algorithm: Knock.token_signature_algorithm
+                          })
     end
 
     def claims
-      _claims = {}
+      _claims       = {}
       _claims[:exp] = token_lifetime if verify_lifetime?
       _claims[:aud] = token_audience if verify_audience?
       _claims
@@ -61,9 +61,9 @@ module Knock
 
     def verify_claims
       {
-        aud: token_audience,
-        verify_aud: verify_audience?,
-        verify_expiration: verify_lifetime?
+          aud:               token_audience,
+          verify_aud:        verify_audience?,
+          verify_expiration: verify_lifetime?
       }
     end
 
